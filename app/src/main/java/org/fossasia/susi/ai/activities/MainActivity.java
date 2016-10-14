@@ -50,11 +50,12 @@ import org.fossasia.susi.ai.rest.ClientBuilder;
 import org.fossasia.susi.ai.rest.model.SusiResponse;
 
 import java.io.ByteArrayOutputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -446,7 +447,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<SusiResponse> call, Throwable t) {
                             Log.d(TAG, t.getLocalizedMessage());
-                            addNewMessage(getString(R.string.error_occurred_try_again), false , false);
+                            if (t instanceof ConnectException) {
+                                addNewMessage(getString(R.string.error_occurred_try_again), false , false);
+                            } else if (t instanceof SocketTimeoutException) {
+                                //Todo change Server URL and make request again.
+                            }
                         }
                     });
         } else {
